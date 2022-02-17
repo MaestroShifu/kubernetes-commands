@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-k8s-deployment
+  labels:
+    app: frontend-k8s
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend-k8s
+  template:
+    metadata:
+      name: frontend-k8s-pod
+      labels:
+        app: frontend-k8s
+    spec:
+      containers:
+      - name: frontend-k8s-container
+        image: frontend-k8s
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-k8s-service
+  labels:
+    app: frontend-k8s
+spec:
+  type: NodePort 
+  selector:
+    app: frontend-k8s
+  ports:
+    - protocol: TCP
+      port: 80 
+      targetPort: 80

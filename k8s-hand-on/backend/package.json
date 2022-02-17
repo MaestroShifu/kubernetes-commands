@@ -1,0 +1,15 @@
+{
+    "name": "backend-test-k8s",
+    "version": "1.0.0",
+    "description": "Test deplyment on k8s",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "author": "MaestroShifu",
+    "license": "ISC",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "express": "^4.17.2"
+    }
+}
