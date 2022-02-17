@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: memory-demo
+spec:
+  containers:
+  - name: memory-demo-ctr
+    image: polinux/stress
+    resources: # Maneja los recursos
+      limits: # Es el limite maximo que puede desfazarse
+        memory: "200Mi"
+      requests: # Esto es garantizado en su ejecucion
+        memory: "100Mi"
+    command: ["stress"]
+    args: ["--vm", "1", "--vm-bytes", "150M", "--vm-hang", "1"]

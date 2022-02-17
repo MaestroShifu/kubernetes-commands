@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  # Configuracion de nuestro replicaset
+  # revisionHistoryLimit: 2 # Cantidad de replicasets almacenados como historicos por default son 10
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    # Configuracion del pod
+    metadata:
+      name: nginx-pod
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx:alpine
+
+---
+# Creacion del servicio
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service # El name puede ser utilizado como DNS
+  labels:
+    app: nginx
+spec:
+  # ClusterIP: Es una ip virtual interna del cluster
+  # NodePort: Permite exponer el servicio al mundo externo
+  # LoadBalancer: Solamente funciona en cloud para crear balanceadores externos
+  type: ClusterIP 
+  selector: # Que label vamos a usar para adjuntar a nuestros pods
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 8080 # Puerto en el que el servicio va a estar escuchando
+      targetPort: 80 # A que puerto dentro del pod se va a consumir 

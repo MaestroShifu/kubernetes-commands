@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cpu-demo
+spec:
+  containers:
+  - name: cpu-demo-ctr
+    image: vish/stress
+    resources: # Maneja los recursos
+      limits: # Es el limite maximo que puede desfazarse
+        cpu: "1" # 1000m milicores
+      requests: # Esto es garantizado en su ejecucion
+        cpu: "0.5" # 500m milicores
+    args:
+    - -cpus
+    - "2"

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: # Sirve para agregar anotaciones
+    kubernetes.io/change-cause: "change port to 8082" # Con esto podemos agregar un use cause para el comando history
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  # Configuracion de nuestro replicaset
+  # revisionHistoryLimit: 2 # Cantidad de replicasets almacenados como historicos por default son 10
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    # Configuracion del pod
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+          - containerPort: 8082

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: replicaset-test
+  labels:
+    app: rs-test
+spec:
+  replicas: 5 # La cantidad de replicas por pod
+  selector: # Con esto valida que pods seleccionar
+    matchLabels:
+      app: pod-label
+  # Manejo de los pods (Si no existe los crea)
+  template:
+    metadata:
+      name: two-containers
+      labels: 
+        app: pod-label
+    spec:
+      containers:
+      - name: cont1
+        image: python:3.6-alpine
+        command: ['sh', '-c', 'echo "cont1" > index.html && python -m http.server 8082']
+      - name: cont2
+        image: python:3.6-alpine
+        command: ['sh', '-c', 'echo "cont2" > index.html && python -m http.server 8083']

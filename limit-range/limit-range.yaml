@@ -1,0 +1,42 @@
+# Creamos un namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+  labels:
+    name: dev
+---
+# El limit range solo se aplica a los recursos de un namespace determinado
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: cpu-min-max-demo-men-cpu-limit-range
+  namespace: dev # Adjuntamos a un namespace
+spec:
+  limits:
+  - default: # Esto es el valor por defecto
+      memory: 256Mi
+      cpu: 1
+    defaultRequest:
+      memory: 256Mi
+      cpu: 0.5
+    max:
+      memory: 1Gi
+      cpu: 1
+    min:
+      memory: 256Mi
+      cpu: 0.5
+    type: Container
+---
+# El pod agregado con un namesspace que contiene un limit range por defecto le agregara limites
+apiVersion: v1 
+kind: Pod
+metadata:
+  name: pod-dev
+  namespace: dev
+  labels: 
+    env: dev
+spec:
+  containers:
+  - name: container-dev
+    image: nginx:alpine

@@ -1,0 +1,17 @@
+apiVersion: v1 # Version del api de kubernetes - kubectl api-version
+kind: Pod # Determinados que sera el pod - kubectl api-resources
+metadata:
+  name: hello-world # Nombre de nuestro pod
+spec:
+  containers:
+  - name: hello-world-container
+    image: nginx:alpine
+--- # Sirve para separar y determinar la forma de crear dos recursos
+apiVersion: v1 
+kind: Pod
+metadata:
+  name: hello-world2
+spec:
+  containers:
+  - name: hello-world2-container
+    image: nginx:alpine
