@@ -18,6 +18,8 @@
 
 * **Revisar el estado del cluster:** `minikube status`
 
+* **Para exponer un servicio:** `minikube service <name_service> -n <name_namespace>`
+
 ## Comandos Kubectl
 
 ### Manage pods
@@ -101,6 +103,12 @@
 
 * **Ver descripcion de un limit range:** `kubectl describe limitrange <name_limitrange> -n <name_namespace>`
 
+## Resource quota
+
+* **Listar los resource quota:** `kubectl get resourcequotas -n <name_namespace>`
+
+* **Ver descripcion de un resource quota:** `kubectl describe resourcequotas <name_resourcequotas> -n <name_namespace>`
+
 ## Utilitarios de Kubernetes
 
 * **Revisar los contextos que posee:** `kubectl config current-context`
@@ -114,6 +122,60 @@
 * **Listar los nodos que tenemos:** `kubectl get nodes`
 
 * **Describir un nodo especifico:** `kubectl describe node <name_nodes>`
+
+* **Consultar informacion del cluster:** `kubectl cluster-info`
+
+* **Ver el contexto actual de usuario:** `kubectl config current-context`
+
+* **Sirve para crear una coneccion del cluster:** `kubectl config set-cluster <cluster_name> --server=<host_cluster> --certificate-authority=<path_key_crt>`
+
+* **Agregar credenciales:** `kubectl config set-credentials <name_user> --client-certificate=<key_user_crt> --client-key=<user_key>`
+
+* **Establecemos un contexto de usuario:** `kubectl config set-context <name_context> --cluster=<name_cluster> --user=<name_user>`
+
+* **Cambiamos de contexto:** `kubectl config use-context <name_context>`
+
+* **Listar los cluster rols:** `kubectl get clusterroles`
+
+
+## Probes
+
+* Son pruebas que ejecutan en los pods para saber que esten corriendo y funcionando satisfactoriamente, se suele validar de 3 formas:
+    - Por comandos, si es igual a 0 es que todo esta bien.
+    - Por TCP, valida si x puerto esta funcionando.
+    - Por HTTP, valida haciendo llamado a una url y todo esta ok si la respuesta es (200 - 399).
+* Tipos de probes:
+    * **Liveness:** Es una prueba que se ejecuta cada N intervalo de tiempo y espera una respuesta.
+    * **Readiness:** Es un diagnostico que se realiza para validar que este listo y agregarlo a los endpoints del servicio.
+    * **Startup:** Pausa el liveness y readiness mientras se configura el pod. 
+
+## Secrets vs ConfigMaps
+* **Secret:** Es data que no puede mostrarse ya que su informacion es sensible.
+* **ConfigMaps:** Guardamos data no sensible.
+
+## Volumenes
+### Tipos de volumenes
+* **EmptyDir: (App stateless)** 
+    - Sirve para crear un directorio dentro del Pod.
+    - Si el pod muere, la data se pierde.
+    - Suele ser bueno como un mini cache.
+* **hostPath: (Es util solo para desarrollo)**
+    - Sirve para crear un volumen dentro del nodo.
+    - Tiene una accesibilidad global en los pods.
+    - Si el nodo muere, se pierde todo.
+    - No se replica en los distintos nodos.
+* **Cloud Vols:**
+    - Es un volumen creado en la nube.
+
+### PV(Persistent Volume) - PVC(Persitent volume claim)
+* **PV:**
+    - El es el encargado de crear el recurso en cloud. 
+* **PVC:**
+    - Es la reclamacion de un volument persistente.
+* **Reclaim Policy:**
+    - Retain: No se elimina el PV y se mantiene la informacion, por ende no se puede volver a reclamar.
+    - Recycle: Elimina la informacion y se reutiliza el espacio por otro PVC.
+    - Delete: Al borrar el PVC se elimina el volumen y su hardware fisico.
 
 
 

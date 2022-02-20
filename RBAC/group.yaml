@@ -1,0 +1,22 @@
+# Es igual a los ejemplos de rol y cluster rol
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: svc-clusterrole
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["services"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-svc
+subjects:
+- kind: Group
+  name: dev # Nombre del grupo al que pertenece // Esta info esta con base a la administracion del cluster "Toca leer mas del tema"
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole #this must be Role or ClusterRole
+  name: svc-clusterrole # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io

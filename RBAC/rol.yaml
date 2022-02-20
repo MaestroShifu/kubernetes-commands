@@ -1,0 +1,29 @@
+# Creacion de un Rol
+# Los roles viven siempre dentro de un namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default # Namespace al que pertenece el rol
+  name: pod-reader
+rules:
+- apiGroups: [""] # Aca agregamos lo que nos retorne kubectl api-resources -> En el caso de pods es vacio
+  resources: ["pods"] # Recurso con el que se quiera interactuar
+  verbs: ["get", "watch", "list"] # La lista de verbos https://kubernetes.io/docs/reference/access-authn-authz/authorization/#determine-the-request-verb
+- apiGroups: ["apps"] 
+  resources: ["deployments"]
+  verbs: ["get", "watch", "list"]
+---
+# Creacion de un rol bindig
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: default # Namespace al que pertenece
+subjects:
+- kind: User # Lo vamos a aplicar a un usuario
+  name: ricardo # Nombre del usuario
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role # Lo vamos a unir a un role 
+  name: pod-reader # Que rol vamos a hacer uso
+  apiGroup: rbac.authorization.k8s.io

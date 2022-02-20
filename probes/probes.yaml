@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    test: liveness
+  name: liveness-comand
+spec:
+  containers:
+  - name: liveness
+    image: k8s.gcr.io/busybox
+    args:
+    - /bin/sh
+    - -c
+    - touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
+    livenessProbe: # Creacion de una liveness
+      exec:
+        command: # Estamos indicando que nuestro probe es por comandos
+        - cat
+        - /tmp/healthy
+      initialDelaySeconds: 5 # Cuando empezara a realizar esta tarea
+      periodSeconds: 5 # Cada cuanto quieres realizar la prueba 
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goproxy-tpc
+  labels:
+    app: goproxy
+spec:
+  containers:
+  - name: goproxy
+    image: k8s.gcr.io/goproxy:0.1
+    ports:
+    - containerPort: 8080
+    readinessProbe:
+      tcpSocket:
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    livenessProbe: 
+      tcpSocket: # Estamos indicando que nuestro probe es por TCP
+        port: 8080
+      initialDelaySeconds: 15
+      periodSeconds: 20
+--- 
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    test: liveness
+  name: liveness-http
+spec:
+  containers:
+  - name: liveness
+    image: k8s.gcr.io/liveness
+    args:
+    - /server
+    livenessProbe:
+      httpGet: # Estamos indicando que nuestro probe es por HTTP
+        path: /healthz # Path que necesitamos
+        port: 8080
+        httpHeaders: # Sirve para agregar custom headers
+        - name: Custom-Header
+          value: Awesome
+      initialDelaySeconds: 3
+      periodSeconds: 3

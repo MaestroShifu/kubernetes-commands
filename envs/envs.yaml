@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: envar-demo
+spec:
+  containers:
+  - name: envar-demo-container
+    image: gcr.io/google-samples/node-hello:1.0
+    env: #Variables de entorno
+    - name: DEMO_GREETING
+      value: "Hello from the environment"
+    - name: DEMO_FAREWELL
+      value: "Such a sweet sorrow"
+    - name: MY_POD_NAME
+      valueFrom: 
+        fieldRef: # Declarar variables de entorno por medio de ref del pod 
+          fieldPath: metadata.name # Variable interna del POD

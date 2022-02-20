@@ -1,0 +1,24 @@
+# Crear un cluster rol
+# Es un permiso para todo el cluster
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-pod-reader
+rules:
+- apiGroups: [""] # Aca agregamos lo que nos retorne kubectl api-resources -> En el caso de pods es vacio
+  resources: ["pods"] # El recurso que quieres que tenga acceso
+  verbs: ["get", "watch", "list"] # La lista de verbos https://kubernetes.io/docs/reference/access-authn-authz/authorization/#determine-the-request-verb
+---
+# Crear un cluster binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-read-pods
+subjects:
+- kind: User # Vamos a aplicarlo a un usuario
+  name: ricardo # Nombre del usuario
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole # Que vamos a adjuntar un cluster binding
+  name: cluster-pod-reader  # Nombre del cluster rol que vamos a utilizar 
+  apiGroup: rbac.authorization.k8s.io

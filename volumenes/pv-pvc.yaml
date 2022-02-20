@@ -1,0 +1,78 @@
+# Creacion del PV
+# Es el encargado de crear un disco con determinada capacidad
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual # Puede ser dinamico o manual
+  capacity:
+    storage: 10Gi # Le vamos a dar 10 Gigas de nuestra maquina
+  accessModes: # Determina la forma de acceso
+    - ReadWriteOnce # Le decimos que solo puede utilizarlo una vez al tiempo
+  hostPath:
+    path: "/test" # Definimos donde se van a guardar los datos / En cloud apuntamos en algun servicio de AWS o GCloud
+---
+# Creacion del PVC
+# Es el que reclama un espacio en disco
+# Al no tener un selector kubernetes determinara el PV que cumpla con los requisitos y se lo asignara. Nota: Los PV no se suelen compartir. 
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests: # Estamos delcarando lo que necesitamos 
+      storage: 10Gi
+--- 
+# Crear un pvc con selectores
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests: # Estamos delcarando lo que necesitamos 
+      storage: 10Gi
+  selector:
+    matchLabels: # Adjuntamos a un PV por medio de los labels
+      type: local
+--- 
+# Creacion de un deployment y adjuntandole un PVC
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        env:
+          - key: MYSQL_ROOT_PASSWORD
+            value: "12345678"
+        volumeMounts: # Definimos el volumen que utilizaremos
+          - mountPath: "/var/lib/mysql" # Este es el path que queremos persistir de nuestro container
+            name: mysql-pv-storage # Nombre del volumen que deseas utilizar
+      volumes: # Los volumenes que funcionaran en este pod
+        - name : mysql-pv-storage
+          persistentVolumeClaim: # Determinados que vamos a usar un PVC
+            claimName: task-pv-claim # Pasamos el volumen de nuestro PVC que vamos a utilizar

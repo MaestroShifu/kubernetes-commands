@@ -1,0 +1,15 @@
+# Los volumenes empty dir persisten mientras nuestro pod dure encendido
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pd
+spec:
+  containers:
+  - image: nginx:alpine
+    name: test-container
+    volumeMounts:
+    - mountPath: /var/log/nginx # Definimos en donde queremos definir nuestro volumen
+      name: vol # Agregamos el nombre del volumen que deseamos usar
+  volumes:
+  - name: vol # Le damos un nombre a nuestro volumen
+    emptyDir: {} # Declaramos el tipo de volumen

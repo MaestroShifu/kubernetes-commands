@@ -1,0 +1,55 @@
+# Creamos un config map por medio de variables de entorno
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  labels:
+    app: front
+data: # Variables de acceso a informacion del config map
+  db_host: dev.host.local
+  db_user: dev_user
+  script: |
+    echo DB host es $DB_HOST y user es $DB_USER > /usr/share/nginx/html/test.html
+---
+# Creammos un deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-test
+  labels:
+    app: front
+spec:
+  # Creacion de un replicaset
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front
+  template:
+    metadata:
+      labels:
+        app: front
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          env: # Determinamos que usaremos variables de entorno
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef: # Asignamos que el valor esta dentro de un config maps
+                  name: nginx-config # Nombre del config map que deseas adjuntar
+                  key: db_host
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef: # Asignamos que el valor esta dentro de un config maps
+                  name: nginx-config # Nombre del config map que deseas adjuntar
+                  key: db_user
+          volumeMounts: # Es el volumen que se va a montar
+          - name: script-vol # Nombre del volumen que deseamos agregar
+            mountPath: /opt # Lugar en donde se guardara dentro del pod (Solo path - nada de archivos)
+      volumes:
+        - name: script-vol # Le damos nombre del volumen
+          configMap:
+            name: nginx-config # EL nombre del config map que vamos adjuntar
+            items: # Las llaves que estan dentro del config map
+            - key: script # Agregamos la llave que deseamos del config map
+              path: script.sh # El nombre que va a tener el archivo

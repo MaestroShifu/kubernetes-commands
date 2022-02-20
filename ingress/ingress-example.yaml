@@ -1,0 +1,66 @@
+## Creamos un deployment de prueba
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingress-depl
+  labels:
+    app: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        command: ["sh", "-c", "echo VERSION 1.0 desde $HOSTNAME > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+---
+# Creamos un service y exponemos el puerto 8080
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-v1
+  labels:
+    app: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+---
+# Creamos un ingress y creamos las recglas
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-test
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules: # Se agregan las recglas de ingreso a nuestros servicios
+  - host: app1.mydomain.com # Podemos user validaciones por Host
+    http:
+      paths: 
+      - backend:
+          serviceName: app-v1 # Nombre del servicio que creamos
+          servicePort: 8080 # El puerto del servico que creamos
+  - http: # Podemos user validaciones por paths
+      paths:
+      - path: /test
+        backend:
+          serviceName: api-server-svc 
+          servicePort: 9090
+  - host: app1.mydomain.com # Podemos user validaciones por Host y por paths al mismo tiempo
+    http:
+      paths: 
+      - paths: /test2
+        backend:
+          serviceName: app-v1 # Nombre del servicio que creamos
+          servicePort: 8080 # El puerto del servico que creamos

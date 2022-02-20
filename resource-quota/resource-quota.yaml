@@ -1,0 +1,22 @@
+# Creamos un namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+  labels:
+    name: dev
+---
+# Creamos el resource quota
+# Se aplica en general a un namespace como un grupo de cuota de maquina a usar
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: res-quota
+  namespace: dev # Adjuntamos el namespace en donde sera aplicado
+spec:
+  hard:
+    request.cpu: "1"
+    request.memory: 1Gi
+    limits.cpu: "2"
+    limits.memory: 2Gi
+    pods: 3 # Limitar la cantidad de pods posible a crear

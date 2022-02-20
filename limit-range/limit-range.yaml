@@ -7,6 +7,7 @@ metadata:
     name: dev
 ---
 # El limit range solo se aplica a los recursos de un namespace determinado
+# Afecta a nivel de objeto
 apiVersion: v1
 kind: LimitRange
 metadata:

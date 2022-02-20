@@ -1,0 +1,11 @@
+# De esta forma se declara un aprovisionamiento dinamico, ya que no existe ningun PV que tenga las siguientes caracteristicas
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sc-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
